@@ -14,3 +14,8 @@ export const deleteTodo = async (id: string) => {
     const response = await api.delete(`todos/${id}`);
     return response;
 } 
+
+export const editTodo = async (id: string, title: string) => {
+    const response = await api.put(`todos/${id}`, { title });
+    return response;
+}

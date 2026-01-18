@@ -1,14 +1,12 @@
 {
   "todos": [
     {
-      "id": "1",
-      "title": "Buy groceries",
-      "completed": false
+      "title": "Buy groceries now",
+      "id": "1"
     },
     {
-      "id": "3",
-      "title": "Read a book",
-      "completed": false
+      "title": "Read a book now",
+      "id": "3"
     },
     {
       "id": "163d",

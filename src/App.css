@@ -80,14 +80,24 @@
     font-size: 18px;
 }
 
-.todo-item > input{
+.todo-checkbox{
     width: 20px;
     height: 15px;
     cursor: pointer;
 }
 
-.todo-item > input:hover{
+.todo-checkbox:hover{
     transform: scale(1.2);
+}
+
+.pencilIcon{
+    width: 20px;
+    height: 20px;
+    color: black;
+    float: right;
+    cursor: pointer;
+    margin-right: 12px;
+    padding-top: 1.5px;
 }
 
 .trashIcon{
@@ -96,4 +106,10 @@
     color: red;
     float: right;
     cursor: pointer;
+}
+
+.editInput{
+    width: 70%;
+    margin-left: 20px;
+    font-size: 13px;
 }

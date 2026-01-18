@@ -1,11 +1,12 @@
-import { fetchTodos, addTodo, deleteTodo } from './api/services';
+import { fetchTodos, addTodo, deleteTodo, editTodo } from './api/services';
 import './App.css'
 import { useState, useRef, useEffect } from 'react'
-import { TrashIcon } from '@heroicons/react/24/outline';
+import { TrashIcon, PencilIcon } from '@heroicons/react/24/outline';
 
 function App() {
   const inputRef = useRef<HTMLInputElement>(null);
   const [todos, setTodos] = useState<any[]>([]);
+  const [isEditing, setIsEditing] = useState<boolean>(false);
 
   useEffect(() => {
      fetchTodos().then(response => {
@@ -32,6 +33,17 @@ function App() {
     });
   }
 
+  const handleEdit = (id: string, newTitle: string) => {
+    // Edit functionality to be implemented
+    setIsEditing(!isEditing);
+    editTodo(id, newTitle).then(response => {
+      const updatedTodos = todos.map(todo => 
+        todo.id === id ? response.data : todo
+      );
+      setTodos(updatedTodos);
+    });
+  }
+
   return (
     <div className='parent'>
       <h1 className='header'>TODO</h1>
@@ -51,9 +63,23 @@ function App() {
         <div className='todo-list'>
           {todos.map((todo: any) => (
             <div key={todo.id} className='todo-item'>
-              <input type="checkbox" readOnly style={{ cursor: 'pointer' }} />
-              <span>{todo.title}</span>
+              <input className="todo-checkbox" type="checkbox" readOnly style={{ cursor: 'pointer' }} />
+              {isEditing ? (
+                <input
+                  type="text"
+                  defaultValue={todo.title}
+                  className='editInput'
+                  onBlur={(e) => {
+                    handleEdit(todo.id, e.target.value);
+                    setIsEditing(false);
+                  }}
+                  // autoFocus
+                />
+              ) : (
+                <span>{todo.title}</span>
+              )}
               <TrashIcon onClick={() => handleDelete(todo.id)} className="trashIcon" />
+              <PencilIcon onClick={() => handleEdit(todo.id, todo.title)} className="pencilIcon" />
             </div>
           ))}
         </div>
