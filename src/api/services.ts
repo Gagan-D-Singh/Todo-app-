@@ -5,8 +5,8 @@ export const fetchTodos = async () => {
     return response;
 };
 
-export const addTodo = async (title: string) => {
-    const response = await api.post('todos', { title, completed: false });
+export const addTodo = async (title: string, id: string) => {
+    const response = await api.post('todos', { title, completed: false, id: id });
     return response;
 }
 

@@ -113,3 +113,10 @@
     margin-left: 20px;
     font-size: 13px;
 }
+
+.plusIcon{
+    width: 25px;
+    height: 25px;
+    cursor: pointer;
+    margin-top: 1px;
+}

@@ -1,89 +1,55 @@
-import { fetchTodos, addTodo, deleteTodo, editTodo } from './api/services';
+import { fetchTodos } from './api/services';
 import './App.css'
-import { useState, useRef, useEffect } from 'react'
-import { TrashIcon, PencilIcon } from '@heroicons/react/24/outline';
+import { useState, useEffect } from 'react'
+import Header from './components/Header';
+import AddItem from './components/AddItem';
+import Content from './components/Content';
+import Footer from './components/Footer';
+import SearchTodo from './components/SearchTodo';
 
 function App() {
-  const inputRef = useRef<HTMLInputElement>(null);
   const [todos, setTodos] = useState<any[]>([]);
   const [isEditing, setIsEditing] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [fetchError, setFetchError] = useState<string | null>(null);
+  const [search, setSearch] = useState<string>('');
 
   useEffect(() => {
-     fetchTodos().then(response => {
-        setTodos(response.data || []);
-        console.log(response);
-     }).catch(error => {
-       console.error('Error fetching todos:', error);
-     });
+     const fetchTodosData = async () => {
+       try {
+          const response = await fetchTodos();
+          if(!response || !response.data) {
+            throw new Error('No data received');
+          }
+          setTodos(response.data || []);
+          setFetchError(null);
+       }
+       catch (error) {
+         console.error('Error fetching todos:', error);
+         setFetchError('Failed to fetch todos');
+       }
+       finally {
+         setIsLoading(false);
+       }
+     }
+      setTimeout(() => fetchTodosData(), 2000);
   }, []);
 
-  const handleAddItem = () => {
-    const inputValue = inputRef.current ? inputRef.current.value : '';
-    addTodo(inputValue).then(response => {
-      setTodos([...todos, response.data]);
-    });
-    if (inputRef.current) {
-      inputRef.current.value = '';
-    }
-  };
-
-  const handleDelete = (id : string) => {
-    deleteTodo(id).then(() => {
-      setTodos(todos.filter(todo => todo.id !== id));
-    });
-  }
-
-  const handleEdit = (id: string, newTitle: string) => {
-    // Edit functionality to be implemented
-    setIsEditing(!isEditing);
-    editTodo(id, newTitle).then(response => {
-      const updatedTodos = todos.map(todo => 
-        todo.id === id ? response.data : todo
-      );
-      setTodos(updatedTodos);
-    });
-  }
+  
 
   return (
     <div className='parent'>
-      <h1 className='header'>TODO</h1>
+      <Header title={"Practice Questions List"}/>
 
       <div className='todo-app'>
-        <div className='todo-input'>
-          <input
-            type="text"
-            placeholder="Add a new task..."
-            ref={inputRef}
-          />
-          <button onClick={handleAddItem}>
-            Add
-          </button>
-        </div>
+        <AddItem todos={todos} setTodos={setTodos} />
+        <SearchTodo search={search} setSearch={setSearch} />
 
-        <div className='todo-list'>
-          {todos.map((todo: any) => (
-            <div key={todo.id} className='todo-item'>
-              <input className="todo-checkbox" type="checkbox" readOnly style={{ cursor: 'pointer' }} />
-              {isEditing ? (
-                <input
-                  type="text"
-                  defaultValue={todo.title}
-                  className='editInput'
-                  onBlur={(e) => {
-                    handleEdit(todo.id, e.target.value);
-                    setIsEditing(false);
-                  }}
-                  // autoFocus
-                />
-              ) : (
-                <span>{todo.title}</span>
-              )}
-              <TrashIcon onClick={() => handleDelete(todo.id)} className="trashIcon" />
-              <PencilIcon onClick={() => handleEdit(todo.id, todo.title)} className="pencilIcon" />
-            </div>
-          ))}
-        </div>
+        {isLoading && <p>Loading todos...</p>}
+        {!isLoading && !fetchError && <Content todos={todos.filter(todo => todo.title.toLowerCase().includes(search.toLowerCase()))} setTodos={setTodos} isEditing={isEditing} setIsEditing={setIsEditing} />}
+        {!isLoading && fetchError && <p>{fetchError}</p>}
       </div>
+      <Footer length={todos.length} />
     </div>
   );
 }
